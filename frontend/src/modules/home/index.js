@@ -15,7 +15,8 @@ export default class Home extends PureComponent {
     this.onSnackbarClose = this.onSnackbarClose.bind(this)
 
     this.state = {
-      isSnackbarOpen: false
+      isSnackbarOpen: false,
+      isSuccess: true,
     }
   }
 
@@ -24,7 +25,9 @@ export default class Home extends PureComponent {
     createFile(file)
       .then((response) => {
         if (response && response.status === 200) {
-          this.setState({ isSnackbarOpen: true, fileName: response.data.name })
+          this.setState({ isSnackbarOpen: true, variant: "success", message: `${response.data.name} uploaded.` })
+        } else if(response && response.status === 400) {
+          this.setState({ isSnackbarOpen: true, variant: "warning", message: "File is too large. Must be under 10MB." })
         }
       })
   }
@@ -36,6 +39,8 @@ export default class Home extends PureComponent {
 
     this.setState({ isSnackbarOpen: false })
   }
+
+
 
   render() {
     return (
@@ -67,11 +72,8 @@ export default class Home extends PureComponent {
           open={this.state.isSnackbarOpen}
           autoHideDuration={6000}
           onClose={this.onSnackbarClose}
-          variant='success'
-          message={`
-            ${this.state.fileName ? this.state.fileName : 'File'}
-            uploaded
-          `}
+          variant={this.state.variant}
+          message={this.state.message}
         />
       </div>
     )
